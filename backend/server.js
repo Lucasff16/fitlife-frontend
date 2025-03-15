@@ -32,6 +32,14 @@ const { rateLimitLogger, csrfErrorLogger } = require('./middleware/securityLogge
 // Importar modelos
 const User = require('./models/User');
 
+// Importar rotas
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/users');
+const workoutRoutes = require('./routes/workouts');
+const exerciseRoutes = require('./routes/exercises');
+const progressRoutes = require('./routes/progress');
+const testRoutes = require('./routes/test');
+
 const app = express();
 
 // Configuração do rate limiting
@@ -95,7 +103,10 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
-      connectSrc: ["'self'", "https://api.cloudinary.com"]
+      connectSrc: ["'self'", "https://api.cloudinary.com", 
+        "http://localhost:4000", "http://localhost:4001", 
+        "http://localhost:4002", "http://localhost:4003", 
+        "http://localhost:4004", "http://localhost:4005"]
     }
   },
   crossOriginEmbedderPolicy: false,
@@ -115,10 +126,36 @@ app.use(rateLimitLogger);
 
 // Configuração do CORS
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function(origin, callback) {
+    // Permitir qualquer origem localhost com portas variáveis (desenvolvimento)
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:5175',
+      'http://localhost:5176',
+      'http://localhost:5177',
+      'http://localhost:5178',
+      'http://localhost:5179',
+      'http://localhost:5180'
+    ];
+    
+    // Em produção, usar a URL do frontend definida no .env
+    if (process.env.NODE_ENV === 'production' && process.env.FRONTEND_URL) {
+      allowedOrigins.push(process.env.FRONTEND_URL);
+    }
+    
+    // Permitir requisições sem origem (como de Postman ou curl)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.match(/^http:\/\/localhost:\d+$/)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Bloqueado pela política de CORS'));
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'CSRF-Token']
 }));
 
 // Logging em desenvolvimento
@@ -141,7 +178,7 @@ const csrfProtection = csrf({
 });
 
 // Rota para obter token CSRF
-app.get('/api/csrf-token', (req, res) => {
+app.get('/api/csrf-token', csrfProtection, (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
 
@@ -164,7 +201,6 @@ app.get('/health', (req, res) => {
 });
 
 // Habilitar rotas de autenticação com rate limiting
-const authRoutes = require('./routes/auth');
 app.use('/api/auth/register', registerLimiter, csrfProtection); // Adicionar proteção CSRF
 app.use('/api/auth/login', loginLimiter); // Sem CSRF para login
 app.use('/api/auth/forgotpassword', passwordResetLimiter); // Sem CSRF para recuperação de senha
@@ -172,11 +208,14 @@ app.use('/api/auth', authLimiter); // Rate limit geral para rotas de autenticaç
 app.use('/api/auth', authRoutes);
 
 // Outras rotas da API com proteção CSRF para métodos que modificam dados
-app.use('/api/users', csrfProtection, require('./routes/users'));
-app.use('/api/exercises', csrfProtection, require('./routes/exercises'));
-app.use('/api/workouts', csrfProtection, require('./routes/workouts'));
-app.use('/api/progress', csrfProtection, require('./routes/progress'));
+app.use('/api/users', protect, userRoutes);
+app.use('/api/exercises', protect, exerciseRoutes);
+app.use('/api/workouts', protect, workoutRoutes);
+app.use('/api/progress', protect, progressRoutes);
 app.use('/api', csrfProtection, require('./routes/fitnessIdeas.routes'));
+
+// Rotas da API
+app.use('/api/test', testRoutes);
 
 // Middleware para rotas não encontradas
 app.use((req, res, next) => {
@@ -200,27 +239,31 @@ const startServer = async () => {
     
     // Se chegou aqui, a conexão foi bem-sucedida
     console.log('✅ MongoDB conectado com sucesso!');
-
-    // Iniciar limpeza periódica de tokens (a cada 12 horas)
+    
+    // Iniciar limpeza de tokens
     startTokenCleanup(12);
-
-    // Definir porta
-    const PORT = process.env.PORT || 4000;
-    const NODE_ENV = process.env.NODE_ENV || 'development';
-
-    // Iniciar o servidor
-    const server = app.listen(PORT, () => {
+    
+    // Usar porta fixa para estabilidade
+    const PORT = parseInt(process.env.PORT || '4000', 10);
+    
+    // Armazenar a porta como propriedade do app para acesso nas rotas
+    app.set('port', PORT);
+    
+    const server = require('http').createServer(app);
+    
+    server.listen(PORT, () => {
+      const NODE_ENV = process.env.NODE_ENV || 'development';
       console.log(`✅ Servidor rodando no modo ${NODE_ENV} na porta ${PORT}`);
     });
-
+    
     // Tratamento de erros não capturados
     process.on('unhandledRejection', (err) => {
       console.log(`❌ Erro: ${err.message}`);
       console.log('❌ Desligando servidor devido a erro não tratado');
       server.close(() => process.exit(1));
     });
-  } catch (error) {
-    console.log(`❌ Erro fatal ao iniciar servidor: ${error}`);
+  } catch (err) {
+    console.error('❌ Erro ao iniciar servidor:', err);
     process.exit(1);
   }
 };
