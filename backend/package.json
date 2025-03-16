@@ -10,6 +10,7 @@
     "test:coverage": "jest --coverage",
     "test:security": "jest security.test.js",
     "test:auth": "jest auth.test.js",
+    "test:crud": "jest crud.test.js",
     "test:ci": "jest --ci --coverage",
     "check-server": "node check-server.js",
     "check-git": "node check-git-commands.js",
