@@ -1,11 +1,13 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-// Criar instância do axios com configurações base
+// Create an axios instance with default config
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
-  withCredentials: true,
-  timeout: 10000, // Timeout de 10 segundos
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4000/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true, // Important for cookies/authentication
 });
 
 // Variável para armazenar o token CSRF
@@ -23,15 +25,21 @@ export const fetchCsrfToken = async () => {
   }
 };
 
-// Interceptor de requisição
+// Request interceptor to add auth token
 api.interceptors.request.use(
-  async (config) => {
-    // Adicionar token de autenticação se disponível
+  (config) => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
+// Interceptor de requisição
+api.interceptors.request.use(
+  async (config) => {
     // Adicionar CSRF token para métodos que modificam dados
     const methodsRequiringCsrf = ['post', 'put', 'delete', 'patch'];
     if (methodsRequiringCsrf.includes(config.method) && !csrfToken) {
@@ -51,74 +59,15 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Interceptor de resposta
+// Response interceptor to handle common errors
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    // Verificar se é um erro de rede (servidor indisponível)
-    if (!error.response) {
-      toast.error('Erro de conexão. Verifique sua internet e se o servidor está rodando.', {
-        position: 'top-right',
-        autoClose: 5000,
-      });
-      return Promise.reject(error);
+  (error) => {
+    // Handle authentication errors
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
     }
-
-    // Tratar erros específicos
-    switch (error.response.status) {
-      case 429: // Rate limit
-        toast.error('Muitas requisições. Por favor, aguarde um momento antes de tentar novamente.', {
-          position: 'top-right',
-          autoClose: 5000,
-        });
-        break;
-      
-      case 403: // CSRF error
-        if (error.response.data.error === 'invalid_csrf_token') {
-          toast.error('Erro de segurança. Recarregando a página para obter um novo token.', {
-            position: 'top-right',
-            autoClose: 3000,
-            onClose: () => window.location.reload()
-          });
-        }
-        break;
-      
-      case 401: // Authentication error
-        // Se o token expirou, tentar renovar
-        if (error.response.data.error === 'token_expired' || 
-            error.response.data.message === 'Token expirado') {
-          try {
-            const refreshResponse = await axios.post(
-              `${import.meta.env.VITE_API_URL}/auth/refresh-token`,
-              {},
-              { withCredentials: true }
-            );
-            
-            if (refreshResponse.data.token) {
-              // Atualizar token no localStorage
-              localStorage.setItem('token', refreshResponse.data.token);
-              
-              // Reenviar a requisição original com o novo token
-              const originalRequest = error.config;
-              originalRequest.headers.Authorization = `Bearer ${refreshResponse.data.token}`;
-              return axios(originalRequest);
-            }
-          } catch (refreshError) {
-            // Se falhar ao renovar o token, redirecionar para login
-            localStorage.removeItem('token');
-            window.location.href = '/login';
-          }
-        }
-        break;
-      
-      case 500:
-        toast.error('Erro no servidor. Por favor, tente novamente mais tarde.', {
-          position: 'top-right',
-          autoClose: 5000,
-        });
-        break;
-    }
-
     return Promise.reject(error);
   }
 );
