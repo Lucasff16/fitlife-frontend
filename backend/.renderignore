@@ -1,0 +1,6 @@
+# Ignorar arquivos relacionados ao git durante o deploy no Render
+.git/
+.github/
+.gitignore
+fix-git-push-error.js
+check-git-commands.js 
