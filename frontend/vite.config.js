@@ -62,7 +62,7 @@ try {
 export default defineConfig({
   plugins: [react()],
   server: {
-    port,
+    port: 5174,
     host: true, // Isso permite acesso de outros dispositivos na rede
     open: true,
     headers: {
