@@ -1,12 +1,83 @@
-# React + Vite
+# FitLife Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação frontend do FitLife, desenvolvida com React Native e Expo para web e mobile.
 
-Currently, two official plugins are available:
+## Tecnologias Utilizadas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React v18.2.0
+- React Native com Expo
+- Vite para desenvolvimento web
+- Redux Toolkit para gerenciamento de estado
+- React Navigation para navegação
+- Styled Components para estilização
+- React Hook Form para formulários
 
-## Expanding the ESLint configuration
+## Estrutura do Projeto
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+frontend/
+├── assets/           # Imagens, fontes e outros recursos estáticos
+├── src/
+│   ├── api/          # Configuração e chamadas de API
+│   ├── components/   # Componentes reutilizáveis
+│   ├── contexts/     # Contextos React
+│   ├── hooks/        # Hooks personalizados
+│   ├── navigation/   # Configuração de navegação
+│   ├── screens/      # Telas da aplicação
+│   ├── services/     # Serviços e lógica de negócio
+│   ├── store/        # Configuração do Redux
+│   ├── styles/       # Estilos globais e temas
+│   ├── types/        # Definições de tipos TypeScript
+│   ├── utils/        # Funções utilitárias
+│   ├── App.tsx       # Componente principal
+│   └── main.tsx      # Ponto de entrada
+├── .env              # Variáveis de ambiente (não versionado)
+├── .env.example      # Exemplo de variáveis de ambiente
+├── app.json          # Configuração do Expo
+└── package.json      # Dependências e scripts
+```
+
+## Instalação
+
+```bash
+# Instalar dependências
+npm install
+
+# Configurar variáveis de ambiente
+cp .env.example .env
+# Edite o arquivo .env com suas configurações
+
+# Iniciar em modo desenvolvimento para web
+npm run web
+
+# Iniciar em modo desenvolvimento para dispositivos móveis
+npm start
+```
+
+## Scripts Disponíveis
+
+- `npm start`: Inicia o servidor Expo
+- `npm run web`: Inicia a aplicação no navegador
+- `npm run android`: Inicia a aplicação no Android
+- `npm run ios`: Inicia a aplicação no iOS
+- `npm run check-react`: Verifica a versão do React
+- `npm run fix-blank-screen`: Corrige problemas de tela branca
+
+## Funcionalidades Principais
+
+- Autenticação de usuários
+- Visualização e gerenciamento de treinos
+- Criação de treinos personalizados
+- Acompanhamento de progresso
+- Favoritar treinos
+- Modo offline
+
+## Compatibilidade
+
+- Web (navegadores modernos)
+- iOS 13+
+- Android 6.0+
+
+## Licença
+
+MIT
