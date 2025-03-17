@@ -1,3 +1,3 @@
 @echo off
 echo Verificando status dos servidores do Projeto Fitness...
-powershell -ExecutionPolicy Bypass -File "%~dp0check-servers.ps1" 
+C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File "%~dp0check-servers.ps1" 

@@ -1,3 +1,3 @@
 @echo off
 echo Diagnosticando servidores do Projeto Fitness...
-powershell -ExecutionPolicy Bypass -File "%~dp0diagnose-servers.ps1" 
+C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File "%~dp0diagnose-servers.ps1" 
