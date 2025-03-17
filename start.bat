@@ -1,0 +1,3 @@
+@echo off
+echo Iniciando servidores do Projeto Fitness...
+powershell -ExecutionPolicy Bypass -File "%~dp0start-servers.ps1" 

@@ -1,0 +1,3 @@
+@echo off
+echo Abrindo o Projeto Fitness no navegador...
+powershell -ExecutionPolicy Bypass -File "%~dp0open-app.ps1" 
