@@ -36,37 +36,13 @@ function findAvailablePort(startPort) {
 const DEFAULT_PORT = 5173
 const port = findAvailablePort(DEFAULT_PORT)
 
-// Atualizar arquivo .env com a porta atual - EXECUTADO APENAS UMA VEZ NA INICIALIZAÇÃO
-let envUpdated = false;
-if (!envUpdated) {
-  try {
-    const envPath = './.env'
-    let envContent = ''
-    
-    if (fs.existsSync(envPath)) {
-      envContent = fs.readFileSync(envPath, 'utf8')
-      // Substituir ou adicionar a variável VITE_PORT
-      if (envContent.includes('VITE_PORT=')) {
-        envContent = envContent.replace(/VITE_PORT=\d+/, `VITE_PORT=${port}`)
-      } else {
-        envContent += `\nVITE_PORT=${port}`
-      }
-    } else {
-      envContent = `VITE_PORT=${port}`
-    }
-    
-    fs.writeFileSync(envPath, envContent)
-    console.log(`✅ Porta ${port} configurada no arquivo .env`)
-    envUpdated = true;
-  } catch (error) {
-    console.error('❌ Erro ao atualizar arquivo .env:', error)
-  }
-}
+// Configurar a porta sem modificar o arquivo .env
+const configuredPort = 5174 // Porta fixa para evitar reinicializações
 
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5174,
+    port: configuredPort,
     host: true, // Isso permite acesso de outros dispositivos na rede
     open: true,
     headers: {
