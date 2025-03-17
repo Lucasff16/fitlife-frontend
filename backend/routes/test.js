@@ -1,4 +1,6 @@
 const express = require('express');
+const { protect } = require('../middleware/auth');
+
 const router = express.Router();
 
 // Rota de teste para verificar a conexão
@@ -14,6 +16,17 @@ router.get('/', (req, res) => {
       port: port,
       environment: process.env.NODE_ENV || 'development'
     }
+  });
+});
+
+// @route   GET /api/protected
+// @desc    Rota protegida para testes
+// @access  Private
+router.get('/protected', protect, (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Você acessou uma rota protegida!',
+    user: req.user
   });
 });
 
