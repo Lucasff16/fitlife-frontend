@@ -1,11 +1,15 @@
 {
   "version": 2,
+  "framework": "expo",
+  "buildCommand": "npm run build",
+  "outputDirectory": "web-build",
+  "installCommand": "npm install --force",
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/expo",
+      "use": "@vercel/node",
       "config": {
-        "installCommand": "npm install --legacy-peer-deps"
+        "includeFiles": ["dist/**"]
       }
     }
   ],
