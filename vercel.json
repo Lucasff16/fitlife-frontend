@@ -3,7 +3,10 @@
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/expo"
+      "use": "@vercel/expo",
+      "config": {
+        "installCommand": "npm install --legacy-peer-deps"
+      }
     }
   ],
   "routes": [
