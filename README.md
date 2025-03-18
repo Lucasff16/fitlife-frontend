@@ -1,37 +1,40 @@
-# Fitness App Backend
+# FitLife Frontend
 
-Backend para aplicativo de treinos e condicionamento físico, desenvolvido com Node.js, Express e TypeScript.
+Aplicação frontend do FitLife, desenvolvida com React Native e Expo para web e mobile.
 
 ## Tecnologias Utilizadas
 
-- Node.js (v18.20.7+)
-- TypeScript
-- Express.js
-- MongoDB com Mongoose
-- Prisma ORM
-- JWT para autenticação
-- Firebase Admin
-- Cors, Helmet e outras ferramentas de segurança
+- React v18.2.0
+- React Native com Expo
+- Vite para desenvolvimento web
+- Redux Toolkit para gerenciamento de estado
+- React Navigation para navegação
+- Styled Components para estilização
+- React Hook Form para formulários
 
 ## Estrutura do Projeto
 
-O projeto segue uma arquitetura modular e escalável:
-
 ```
-/
-├── dist/               # Código compilado
+frontend/
+├── assets/           # Imagens, fontes e outros recursos estáticos
 ├── src/
-│   ├── config/         # Configurações
-│   ├── controllers/    # Controladores
-│   ├── middleware/     # Middlewares
-│   ├── models/         # Modelos de dados
-│   ├── routes/         # Rotas da API
-│   ├── services/       # Serviços
-│   ├── utils/          # Utilitários
-│   └── server.ts       # Arquivo principal
-├── prisma/             # Configuração do Prisma
-├── tests/              # Testes
-└── package.json        # Dependências
+│   ├── api/          # Configuração e chamadas de API
+│   ├── components/   # Componentes reutilizáveis
+│   ├── contexts/     # Contextos React
+│   ├── hooks/        # Hooks personalizados
+│   ├── navigation/   # Configuração de navegação
+│   ├── screens/      # Telas da aplicação
+│   ├── services/     # Serviços e lógica de negócio
+│   ├── store/        # Configuração do Redux
+│   ├── styles/       # Estilos globais e temas
+│   ├── types/        # Definições de tipos TypeScript
+│   ├── utils/        # Funções utilitárias
+│   ├── App.tsx       # Componente principal
+│   └── main.tsx      # Ponto de entrada
+├── .env              # Variáveis de ambiente (não versionado)
+├── .env.example      # Exemplo de variáveis de ambiente
+├── app.json          # Configuração do Expo
+└── package.json      # Dependências e scripts
 ```
 
 ## Instalação
@@ -42,39 +45,39 @@ npm install
 
 # Configurar variáveis de ambiente
 cp .env.example .env
+# Edite o arquivo .env com suas configurações
 
-# Executar migrações do Prisma (se aplicável)
-npx prisma migrate dev
+# Iniciar em modo desenvolvimento para web
+npm run web
 
-# Iniciar em modo de desenvolvimento
-npm run dev
-
-# Compilar para produção
-npm run build
-
-# Iniciar em modo de produção
+# Iniciar em modo desenvolvimento para dispositivos móveis
 npm start
 ```
 
 ## Scripts Disponíveis
 
-- `npm start` - Inicia o servidor em produção
-- `npm run dev` - Inicia o servidor em modo de desenvolvimento com hot-reload
-- `npm run build` - Compila o TypeScript para JavaScript
-- `npm test` - Executa os testes
-- `npm run dev-frontend` - Inicia o frontend em modo de desenvolvimento
-- `npm run build-frontend` - Compila o frontend para produção
+- `npm start`: Inicia o servidor Expo
+- `npm run web`: Inicia a aplicação no navegador
+- `npm run android`: Inicia a aplicação no Android
+- `npm run ios`: Inicia a aplicação no iOS
+- `npm run check-react`: Verifica a versão do React
+- `npm run fix-blank-screen`: Corrige problemas de tela branca
 
-## API Endpoints
+## Funcionalidades Principais
 
-- `GET /api/health` - Verificação de saúde da API
-- `POST /api/auth/register` - Registro de usuário
-- `POST /api/auth/login` - Login de usuário
-- `GET /api/workouts` - Lista de treinos
-- `POST /api/workouts` - Criar novo treino
-- `GET /api/exercises` - Lista de exercícios
-- `POST /api/exercises` - Criar novo exercício
+- Autenticação de usuários
+- Visualização e gerenciamento de treinos
+- Criação de treinos personalizados
+- Acompanhamento de progresso
+- Favoritar treinos
+- Modo offline
+
+## Compatibilidade
+
+- Web (navegadores modernos)
+- iOS 13+
+- Android 6.0+
 
 ## Licença
 
-ISC 
+MIT
